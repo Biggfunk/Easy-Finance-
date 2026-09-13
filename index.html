@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FundTrack — Personal Finance Tracker</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- Sidebar navigation -->
+  <nav class="sidebar">
+    <div class="brand">
+      <span class="brand-icon">💰</span>
+      <span class="brand-name">FundTrack</span>
+    </div>
+    <button class="nav-btn active" data-view="dashboard">📊 Dashboard</button>
+    <button class="nav-btn" data-view="add">➕ Add Transaction</button>
+    <button class="nav-btn" data-view="history">📜 History</button>
+    <button class="nav-btn" data-view="categories">🗂️ Categories</button>
+  </nav>
+
+  <main class="content">
+
+    <!-- DASHBOARD VIEW -->
+    <section id="view-dashboard" class="view active">
+      <h1>Dashboard</h1>
+      <div class="summary-cards">
+        <div class="card expense">
+          <div class="card-label">Total Spending</div>
+          <div class="card-value" id="totalExpense">$0.00</div>
+        </div>
+        <div class="card income">
+          <div class="card-label">Total Income</div>
+          <div class="card-value" id="totalIncome">$0.00</div>
+        </div>
+        <div class="card balance">
+          <div class="card-label">Net Balance</div>
+          <div class="card-value" id="netBalance">$0.00</div>
+        </div>
+      </div>
+
+      <h2>Spending by Category</h2>
+      <div id="categoryBreakdown" class="category-breakdown">
+        <p class="empty-state">No spending logged yet. Add an expense to see your breakdown.</p>
+      </div>
+
+      <h2>Income by Category</h2>
+      <div id="incomeBreakdown" class="category-breakdown">
+        <p class="empty-state">No income logged yet.</p>
+      </div>
+
+      <h2>Recent Transactions</h2>
+      <div id="recentList" class="transaction-list">
+        <p class="empty-state">Nothing here yet.</p>
+      </div>
+    </section>
+
+    <!-- ADD TRANSACTION VIEW -->
+    <section id="view-add" class="view">
+      <h1>Add Transaction</h1>
+      <form id="transactionForm" class="tx-form">
+
+        <div class="type-toggle">
+          <button type="button" class="type-btn active" data-type="expense">Expense</button>
+          <button type="button" class="type-btn" data-type="income">Income</button>
+        </div>
+
+        <label for="description">Description</label>
+        <input type="text" id="description" placeholder="e.g. Groceries, Rent, Paycheck" required>
+
+        <label for="category">Category</label>
+        <select id="category" required></select>
+
+        <label for="amount">Amount ($)</label>
+        <input type="number" id="amount" step="0.01" min="0" placeholder="0.00" required>
+
+        <label for="date">Date</label>
+        <input type="date" id="date" required>
+
+        <!-- Auto calculator preview -->
+        <div class="auto-calc" id="autoCalc">
+          <div class="auto-calc-row">
+            <span>Current Balance</span>
+            <span id="calcCurrent">$0.00</span>
+          </div>
+          <div class="auto-calc-row">
+            <span id="calcLabel">This transaction</span>
+            <span id="calcDelta">$0.00</span>
+          </div>
+          <div class="auto-calc-row total">
+            <span>New Balance</span>
+            <span id="calcNew">$0.00</span>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn">Save Transaction</button>
+      </form>
+    </section>
+
+    <!-- HISTORY VIEW -->
+    <section id="view-history" class="view">
+      <h1>Transaction History</h1>
+
+      <div class="filters">
+        <input type="text" id="searchInput" placeholder="Search description...">
+        <select id="filterType">
+          <option value="all">All Types</option>
+          <option value="expense">Spending Only</option>
+          <option value="income">Income Only</option>
+        </select>
+        <select id="filterCategory">
+          <option value="all">All Categories</option>
+        </select>
+      </div>
+
+      <div id="fullList" class="transaction-list">
+        <p class="empty-state">No transactions recorded yet.</p>
+      </div>
+    </section>
+
+    <!-- CATEGORIES VIEW -->
+    <section id="view-categories" class="view">
+      <h1>Categories</h1>
+      <p class="subtle">These are the categories available in the Add Transaction dropdown.</p>
+
+      <div class="category-columns">
+        <div>
+          <h3>Income Categories</h3>
+          <ul id="incomeCategoryList" class="category-list"></ul>
+        </div>
+        <div>
+          <h3>Expense Categories</h3>
+          <ul id="expenseCategoryList" class="category-list"></ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

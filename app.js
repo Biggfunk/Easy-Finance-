@@ -81,10 +81,10 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-function getTotals() {
+function getTotals(list = entries) {
   let income = 0;
   let expense = 0;
-  for (const t of entries) {
+  for (const t of list) {
     if (t.type === "income") income += t.amount;
     else expense += t.amount;
   }
@@ -93,6 +93,22 @@ function getTotals() {
 
 function hasExamples() {
   return entries.some((t) => t.example);
+}
+
+// ---------- Month helpers ----------
+// Dates are stored as "YYYY-MM-DD", so a month is just the first 7 characters.
+
+function monthKey(year, month) {
+  return `${year}-${String(month + 1).padStart(2, "0")}`;
+}
+
+function entriesForMonth(year, month) {
+  const key = monthKey(year, month);
+  return entries.filter((t) => t.date.slice(0, 7) === key);
+}
+
+function monthLabel(year, month) {
+  return new Date(year, month, 1).toLocaleDateString(undefined, { month: "long", year: "numeric" });
 }
 
 // ---------- Navigation ----------
@@ -108,6 +124,7 @@ railButtons.forEach((btn) => {
     document.getElementById(`view-${btn.dataset.view}`).classList.add("active");
     if (btn.dataset.view === "ledger") renderLedger();
     if (btn.dataset.view === "add") updateAutoCalc();
+    if (btn.dataset.view === "calendar") renderCalendar();
   });
 });
 
@@ -187,6 +204,21 @@ form.addEventListener("submit", (e) => {
 
 // ---------- Dashboard ----------
 
+const today = new Date();
+let dashYear = today.getFullYear();
+let dashMonth = today.getMonth();
+
+document.getElementById("dashPrevMonth").addEventListener("click", () => {
+  dashMonth -= 1;
+  if (dashMonth < 0) { dashMonth = 11; dashYear -= 1; }
+  renderDashboard();
+});
+document.getElementById("dashNextMonth").addEventListener("click", () => {
+  dashMonth += 1;
+  if (dashMonth > 11) { dashMonth = 0; dashYear += 1; }
+  renderDashboard();
+});
+
 function renderExampleBanner() {
   const el = document.getElementById("exampleBanner");
   if (!hasExamples()) {
@@ -207,7 +239,10 @@ function renderExampleBanner() {
 }
 
 function renderDashboard() {
-  const { income, expense, balance } = getTotals();
+  document.getElementById("dashMonthLabel").textContent = monthLabel(dashYear, dashMonth);
+
+  const monthEntries = entriesForMonth(dashYear, dashMonth);
+  const { income, expense, balance } = getTotals(monthEntries);
   document.getElementById("totalExpense").textContent = formatMoney(expense);
   document.getElementById("totalIncome").textContent = formatMoney(income);
   const balanceEl = document.getElementById("netBalance");
@@ -215,13 +250,13 @@ function renderDashboard() {
   balanceEl.style.color = balance >= 0 ? "var(--ink)" : "var(--negative)";
 
   renderExampleBanner();
-  renderBreakdown("expense", document.getElementById("expenseBreakdown"), "No spending logged yet.");
-  renderBreakdown("income", document.getElementById("incomeBreakdown"), "No income logged yet.");
-  renderEntryList(document.getElementById("recentEntries"), entries.slice(0, 6), "Nothing here yet.");
+  renderBreakdown("expense", document.getElementById("expenseBreakdown"), "No spending logged yet.", monthEntries);
+  renderBreakdown("income", document.getElementById("incomeBreakdown"), "No income logged yet.", monthEntries);
+  renderEntryList(document.getElementById("recentEntries"), monthEntries.slice(0, 6), "Nothing here this month.");
 }
 
-function renderBreakdown(type, container, emptyMessage) {
-  const relevant = entries.filter((t) => t.type === type);
+function renderBreakdown(type, container, emptyMessage, list = entries) {
+  const relevant = list.filter((t) => t.type === type);
   if (relevant.length === 0) {
     container.innerHTML = `<p class="empty-note">${emptyMessage}</p>`;
     return;
@@ -232,7 +267,7 @@ function renderBreakdown(type, container, emptyMessage) {
     sums[t.category] = (sums[t.category] || 0) + t.amount;
   }
 
-  const total = getTotals()[type === "income" ? "income" : "expense"];
+  const total = getTotals(list)[type === "income" ? "income" : "expense"];
 
   const rows = Object.entries(sums)
     .sort((a, b) => b[1] - a[1])
@@ -294,6 +329,7 @@ function renderEntryList(container, list, emptyMessage) {
 // ---------- Ledger (history) ----------
 
 const searchInput = document.getElementById("searchInput");
+const filterMonth = document.getElementById("filterMonth");
 const filterType = document.getElementById("filterType");
 const filterCategory = document.getElementById("filterCategory");
 
@@ -304,27 +340,44 @@ function populateFilterCategories() {
     all.map((c) => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
 }
 
+function populateFilterMonths() {
+  const previous = filterMonth.value;
+  const keys = [...new Set(entries.map((t) => t.date.slice(0, 7)))].sort().reverse();
+  filterMonth.innerHTML =
+    `<option value="all">All time</option>` +
+    keys
+      .map((key) => {
+        const [y, m] = key.split("-").map(Number);
+        return `<option value="${key}">${monthLabel(y, m - 1)}</option>`;
+      })
+      .join("");
+  if (keys.includes(previous)) filterMonth.value = previous;
+}
+
 function renderLedger() {
   populateFilterCategories();
+  populateFilterMonths();
   applyFilters();
 }
 
 function applyFilters() {
   const q = searchInput.value.toLowerCase();
+  const month = filterMonth.value;
   const type = filterType.value;
   const cat = filterCategory.value;
 
   const filtered = entries.filter((t) => {
     const matchesQuery = t.description.toLowerCase().includes(q);
+    const matchesMonth = month === "all" || t.date.slice(0, 7) === month;
     const matchesType = type === "all" || t.type === type;
     const matchesCat = cat === "all" || t.category === cat;
-    return matchesQuery && matchesType && matchesCat;
+    return matchesQuery && matchesMonth && matchesType && matchesCat;
   });
 
   renderEntryList(document.getElementById("fullEntries"), filtered, "No entries match.");
 }
 
-[searchInput, filterType, filterCategory].forEach((el) =>
+[searchInput, filterMonth, filterType, filterCategory].forEach((el) =>
   el.addEventListener("input", applyFilters)
 );
 

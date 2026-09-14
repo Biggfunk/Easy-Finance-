@@ -4,7 +4,8 @@ A simple, no-signup spending tracker with a ledger-book identity: red for
 debits, green for credits, tabular figures throughout. Log expenses (and
 income, for a full net balance) with category dropdowns, a live
 auto-calculating preview, and a clean dashboard focused on where your money
-is going — all in a single page, no build step or server required.
+is going. Optionally connects to your real bank via Plaid to pull
+transactions in automatically instead of typing each one.
 
 ## Features
 
@@ -16,22 +17,35 @@ is going — all in a single page, no build step or server required.
   tailored to the type (switch to Income when needed), and a live "auto
   calculator" that previews your new balance before you save.
 - **Ledger** — search and filter every entry by description, type, or
-  category.
+  category. Click any category tag to recategorize an entry on the spot.
 - **Categories** — see the full list of built-in categories (Salary,
   Freelance, Housing, Groceries, Subscriptions, Savings, and more).
+- **Bank Sync** — link a bank via Plaid and pull in real transactions.
+  They're auto-categorized by merchant keyword rules and Plaid's own
+  categories, and every correction you make is remembered for that
+  merchant next time. Requires running the small backend in `server/` —
+  see [`server/README.md`](server/README.md) — since Plaid's secret key
+  can't live in browser code.
 
 ## Usage
 
-Just open `index.html` in a browser — no installation needed. Data is saved
-in your browser's local storage, so it persists between visits on the same
-device/browser.
+The core app (`index.html`, `style.css`, `app.js`) needs no build step or
+server — open `index.html` in a browser, or host it as a static site (e.g.
+GitHub Pages). Data is saved in your browser's local storage, so it
+persists between visits on the same device/browser.
 
 ```
 open index.html
 ```
 
+Bank Sync is the one feature that needs something running server-side —
+see [`server/README.md`](server/README.md) to set it up (free with Plaid's
+Sandbox, using their fake test banks).
+
 ## Files
 
-- `index.html` — page structure and views (Dashboard / Add Transaction / Ledger / Categories)
+- `index.html` — page structure and views (Dashboard / Add Transaction / Ledger / Categories / Bank Sync)
 - `style.css` — styling, including light and dark theme tokens
-- `app.js` — app logic, categories, calculations, and local storage persistence
+- `app.js` — core app logic, categories, calculations, and local storage persistence
+- `bank-sync.js` — Plaid Link flow, transaction import, and merchant categorization
+- `server/` — small Node backend that holds the Plaid secret and talks to Plaid's API (see its own README)

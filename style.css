@@ -459,6 +459,41 @@ button, input, select { font-family: inherit; font-size: inherit; color: inherit
 .cat-list li { padding: 10px 16px; border-bottom: 1px solid var(--line); font-size: 0.9rem; }
 .cat-list li:last-child { border-bottom: none; }
 
+/* ---------- Bank sync ---------- */
+.bank-card { max-width: 560px; }
+.subtle { color: var(--ink-muted); }
+.subtle.small { font-size: 0.8rem; margin: 12px 0 0; }
+.subtle.small code { font-family: var(--font-mono); background: var(--panel-2); padding: 1px 5px; border-radius: 4px; }
+
+.bank-actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+.bank-actions .submit-btn { margin-top: 0; width: auto; padding: 11px 18px; }
+.submit-btn.secondary { background: var(--panel-2); color: var(--ink); border: 1px solid var(--line); }
+.submit-btn.secondary:hover { border-color: var(--accent); color: var(--accent); background: var(--panel-2); }
+.submit-btn:disabled { opacity: 0.55; cursor: default; }
+
+.sync-status { margin-top: 16px; font-size: 0.88rem; color: var(--ink-muted); min-height: 1.2em; }
+.sync-status.error { color: var(--negative); }
+.sync-status.success { color: var(--positive); }
+
+.bank-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 18px; border-bottom: 1px solid var(--line); }
+.bank-row:last-child { border-bottom: none; }
+.bank-row-name { font-weight: 600; }
+.bank-row-meta { font-size: 0.78rem; color: var(--ink-muted); }
+
+/* Inline category editing on an entry chip */
+.chip.editable { cursor: pointer; border: 1px dashed transparent; }
+.chip.editable:hover { border-color: currentColor; }
+.chip-select {
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--ink);
+  padding: 1px 6px;
+}
+
 @media (max-width: 720px) {
   .app { flex-direction: column; }
   .rail { width: 100%; flex-direction: row; overflow-x: auto; padding: 12px; align-items: center; }

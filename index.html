@@ -35,12 +35,16 @@
       <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 5.2A1.7 1.7 0 0 1 5.2 3.5h3l1.7 1.7h6.4a1.7 1.7 0 0 1 1.7 1.7v7.4a1.7 1.7 0 0 1-1.7 1.7H5.2a1.7 1.7 0 0 1-1.7-1.7z"/></svg>
       Categories
     </button>
+    <button class="rail-btn" data-view="bank">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5 10 3l7 5.5"/><path d="M4.5 8.5v7M8 8.5v7M12 8.5v7M15.5 8.5v7"/><path d="M3 17h14"/></svg>
+      Bank Sync
+    </button>
     <button class="rail-btn" data-view="calendar">
       <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="13" height="12" rx="1.5"/><path d="M3.5 8h13M7 3v3M13 3v3"/></svg>
       Calendar
     </button>
 
-    <div class="rail-foot">Stored on this device only.</div>
+    <div class="rail-foot">Entries stored on this device only.</div>
   </nav>
 
   <main class="content">
@@ -176,6 +180,35 @@
       </div>
     </section>
 
+    <!-- BANK SYNC -->
+    <section id="view-bank" class="view">
+      <div class="view-head">
+        <h1>Bank Sync</h1>
+        <p>Pull transactions in automatically via Plaid, instead of typing each one.</p>
+      </div>
+
+      <div class="section-label">Server</div>
+      <div class="form-card bank-card">
+        <div class="field">
+          <label for="serverUrl">FundTrack server URL</label>
+          <input id="serverUrl" type="text" placeholder="http://localhost:4000">
+        </div>
+        <p class="subtle small">This is the small backend that talks to Plaid on your behalf &mdash; see <code>server/README.md</code> in the repo to run or deploy it. Nothing here works until it's reachable.</p>
+      </div>
+
+      <div class="section-label">Linked banks</div>
+      <div id="bankList" class="entries">
+        <p class="empty-note">No banks connected yet.</p>
+      </div>
+
+      <div class="bank-actions">
+        <button type="button" id="connectBankBtn" class="submit-btn secondary">Connect a bank</button>
+        <button type="button" id="syncBtn" class="submit-btn">Sync transactions</button>
+      </div>
+
+      <div id="syncStatus" class="sync-status"></div>
+    </section>
+
     <!-- CALENDAR -->
     <section id="view-calendar" class="view">
       <div class="view-head month-head">
@@ -217,7 +250,9 @@
   </div>
 </div>
 
+<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
 <script src="app.js"></script>
+<script src="bank-sync.js"></script>
 <script src="calendar.js"></script>
 <script>
   if ("serviceWorker" in navigator) {

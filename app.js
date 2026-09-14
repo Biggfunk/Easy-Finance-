@@ -95,6 +95,30 @@ function hasExamples() {
   return entries.some((t) => t.example);
 }
 
+// ---------- Merchant category memory ----------
+// Shared with bank-sync.js: once you recategorize an entry, the same
+// description auto-categorizes correctly next time it's imported.
+
+const MERCHANT_MEMORY_KEY = "fundtrack.merchant_memory";
+
+function normalizeDescription(str) {
+  return str.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function getMerchantMemory() {
+  try {
+    return JSON.parse(localStorage.getItem(MERCHANT_MEMORY_KEY)) || {};
+  } catch {
+    return {};
+  }
+}
+
+function rememberMerchantCategory(description, category) {
+  const memory = getMerchantMemory();
+  memory[normalizeDescription(description)] = category;
+  localStorage.setItem(MERCHANT_MEMORY_KEY, JSON.stringify(memory));
+}
+
 // ---------- Month helpers ----------
 // Dates are stored as "YYYY-MM-DD", so a month is just the first 7 characters.
 
@@ -301,8 +325,9 @@ function renderEntryList(container, list, emptyMessage) {
         <div class="entry-main">
           <span class="entry-desc">${escapeHtml(t.description)}</span>
           <span class="entry-meta">
-            <span class="chip ${t.type}">${escapeHtml(t.category)}</span>
+            <span class="chip ${t.type} editable" data-id="${t.id}" title="Click to recategorize">${escapeHtml(t.category)}</span>
             ${t.example ? '<span class="chip example">example</span>' : ""}
+            ${t.source ? `<span class="chip example">${escapeHtml(t.source)}</span>` : ""}
             <span class="entry-date">${t.date}</span>
           </span>
         </div>
@@ -322,6 +347,39 @@ function renderEntryList(container, list, emptyMessage) {
       saveEntries();
       renderDashboard();
       renderLedger();
+    });
+  });
+
+  container.querySelectorAll(".chip.editable").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      const entry = entries.find((t) => t.id === chip.dataset.id);
+      if (!entry) return;
+
+      const select = document.createElement("select");
+      select.className = "chip-select";
+      CATEGORIES[entry.type].forEach((cat) => {
+        const opt = document.createElement("option");
+        opt.value = cat;
+        opt.textContent = cat;
+        if (cat === entry.category) opt.selected = true;
+        select.appendChild(opt);
+      });
+
+      select.addEventListener("change", () => {
+        entry.category = select.value;
+        rememberMerchantCategory(entry.description, select.value);
+        saveEntries();
+        renderDashboard();
+        renderLedger();
+      });
+      // No change made: re-render on blur just to restore the chip.
+      select.addEventListener("blur", () => {
+        renderDashboard();
+        renderLedger();
+      });
+
+      chip.replaceWith(select);
+      select.focus();
     });
   });
 }

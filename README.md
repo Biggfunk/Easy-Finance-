@@ -8,15 +8,21 @@ is going — all in a single page, no build step or server required.
 
 ## Features
 
-- **Dashboard** — total spending, total income, net balance, and a
-  spending-by-category breakdown (with a matching income breakdown below it)
-  at a glance. Opens with a few clearly-marked example entries so you can
-  see it in action; clear them with one click.
+- **Dashboard** — scoped to one month at a time (defaults to the current
+  month, with prev/next arrows to browse others), showing that month's
+  total spending, total income, net balance, and a spending-by-category
+  breakdown (with a matching income breakdown below it). Nothing is ever
+  deleted month to month — it's just a different lens on the same ledger.
+  Opens with a few clearly-marked example entries so you can see it in
+  action; clear them with one click.
 - **Add Transaction** — defaults to Expense, with a category dropdown
   tailored to the type (switch to Income when needed), and a live "auto
   calculator" that previews your new balance before you save.
-- **Ledger** — search and filter every entry by description, type, or
-  category.
+- **Ledger** — every entry ever recorded, searchable and filterable by
+  month, type, or category.
+- **Calendar** — a month grid showing each day's spending and income
+  totals at a glance; click any day for a full breakdown of everything
+  that happened on it.
 - **Categories** — see the full list of built-in categories (Salary,
   Freelance, Housing, Groceries, Subscriptions, Savings, and more).
 
@@ -32,6 +38,7 @@ open index.html
 
 ## Files
 
-- `index.html` — page structure and views (Dashboard / Add Transaction / Ledger / Categories)
+- `index.html` — page structure and views (Dashboard / Add Transaction / Ledger / Categories / Calendar)
 - `style.css` — styling, including light and dark theme tokens
-- `app.js` — app logic, categories, calculations, and local storage persistence
+- `app.js` — core app logic: categories, calculations, month-scoped dashboard, local storage persistence
+- `calendar.js` — the Calendar view: month grid, daily totals, and the day-detail popup

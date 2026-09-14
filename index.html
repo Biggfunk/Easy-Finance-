@@ -39,6 +39,10 @@
       <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5 10 3l7 5.5"/><path d="M4.5 8.5v7M8 8.5v7M12 8.5v7M15.5 8.5v7"/><path d="M3 17h14"/></svg>
       Bank Sync
     </button>
+    <button class="rail-btn" data-view="calendar">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="13" height="12" rx="1.5"/><path d="M3.5 8h13M7 3v3M13 3v3"/></svg>
+      Calendar
+    </button>
 
     <div class="rail-foot">Entries stored on this device only.</div>
   </nav>
@@ -47,9 +51,20 @@
 
     <!-- DASHBOARD -->
     <section id="view-dashboard" class="view active">
-      <div class="view-head">
-        <h1>Dashboard</h1>
-        <p>Where your money went, at a glance.</p>
+      <div class="view-head month-head">
+        <div>
+          <h1>Dashboard</h1>
+          <p>Where your money went, at a glance.</p>
+        </div>
+        <div class="month-switcher">
+          <button type="button" id="dashPrevMonth" class="month-nav-btn" title="Previous month" aria-label="Previous month">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5 6.5 10l5.5 5.5"/></svg>
+          </button>
+          <span id="dashMonthLabel" class="month-label">September 2026</span>
+          <button type="button" id="dashNextMonth" class="month-nav-btn" title="Next month" aria-label="Next month">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4.5 13.5 10 8 15.5"/></svg>
+          </button>
+        </div>
       </div>
 
       <div id="exampleBanner"></div>
@@ -134,6 +149,7 @@
 
       <div class="filters">
         <input type="text" id="searchInput" placeholder="Search description...">
+        <select id="filterMonth"><option value="all">All time</option></select>
         <select id="filterType">
           <option value="all">All types</option>
           <option value="expense">Spending only</option>
@@ -193,12 +209,51 @@
       <div id="syncStatus" class="sync-status"></div>
     </section>
 
+    <!-- CALENDAR -->
+    <section id="view-calendar" class="view">
+      <div class="view-head month-head">
+        <div>
+          <h1>Calendar</h1>
+          <p>Daily spending, at a glance. Click a day for the full breakdown.</p>
+        </div>
+        <div class="month-switcher">
+          <button type="button" id="calPrevMonth" class="month-nav-btn" title="Previous month" aria-label="Previous month">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5 6.5 10l5.5 5.5"/></svg>
+          </button>
+          <span id="calMonthLabel" class="month-label">September 2026</span>
+          <button type="button" id="calNextMonth" class="month-nav-btn" title="Next month" aria-label="Next month">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4.5 13.5 10 8 15.5"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="cal-weekdays">
+        <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+      </div>
+      <div id="calGrid" class="cal-grid"></div>
+    </section>
+
   </main>
+</div>
+
+<!-- Day detail modal -->
+<div id="dayModal" class="modal-backdrop" hidden>
+  <div class="modal-card">
+    <div class="modal-head">
+      <h2 id="dayModalTitle">Day</h2>
+      <button type="button" id="dayModalClose" class="icon-btn" title="Close" aria-label="Close">
+        <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 5l10 10M15 5L5 15"/></svg>
+      </button>
+    </div>
+    <div id="dayModalSummary" class="day-modal-summary"></div>
+    <div id="dayModalEntries" class="entries"></div>
+  </div>
 </div>
 
 <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
 <script src="app.js"></script>
 <script src="bank-sync.js"></script>
+<script src="calendar.js"></script>
 <script>
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
